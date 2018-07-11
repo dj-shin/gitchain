@@ -12,12 +12,12 @@ def gen(idx, n_procs, msg, q):
     repeat = 6
     l = len(msg) + repeat + 2
     data = b'commit %d\0%s' % (l, msg)
-    r = re.compile(b'(committer [^ ]+ [^ ]+ )(?P<commit_time>\d+)( .*)')
-    current_time = int(r.search(data)['commit_time'].decode())
+    r = re.compile(b'(committer (.*) )(?P<commit_time>\d+)( .*)')
+    current_time = int(r.search(data).group('commit_time').decode())
     now = int(time.time())
     difficulty = 7
     for t in range(now + 120, now + 86400):
-        new_str = r.search(data)[1] + str(t).encode() + r.search(data)[3]
+        new_str = r.search(data).group(1) + str(t).encode() + r.search(data).group(4)
         replaced = r.sub(new_str, data)
         for nonce in itertools.islice(itertools.product(string.ascii_letters, repeat=repeat), idx, len(string.ascii_letters) ** repeat, n_procs):
             nonce = ''.join(nonce)
