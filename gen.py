@@ -57,10 +57,10 @@ if __name__ == '__main__':
     print(datetime.fromtimestamp(int(t)).strftime('%Y-%m-%d %H:%M:%S'))
     print(nonce)
     if args.force_commit:
-        now = int(time.time())
-        wait = t - now
-        print('waiting %d seconds to commit' % wait)
         sp = subprocess.run(['git', 'log', '-1', '--pretty=%B'], stdout=subprocess.PIPE)
         message = sp.stdout.decode()
+        now = time.time()
+        wait = t - now + 0.5
+        print('waiting %.2f seconds to commit' % wait)
         time.sleep(wait)
         sp = subprocess.run(['git', 'commit', '-a', '--amend', '-m', message + nonce + '\n'])
